@@ -9,10 +9,12 @@
             --bg-obsidian: #0b0c10;
             --bg-panel: #1f2833;
             --bg-input: #121824;
+            --bg-server-dock: #07080a;
             --text-neon: #45f3ff;
             --text-light: #c5c6c7;
             --accent-violet: #6f2cf1;
             --accent-hover: #5219c9;
+            --text-muted: #72767d;
         }
 
         body {
@@ -40,6 +42,7 @@
         .auth-card input {
             width: 100%; padding: 10px; margin: 10px 0; box-sizing: border-box;
             background: var(--bg-input); border: 1px solid #333; color: #fff; border-radius: 4px;
+            outline: none;
         }
         .auth-card button {
             width: 100%; padding: 12px; background: var(--accent-violet);
@@ -48,7 +51,29 @@
         .auth-card button:hover { background: var(--accent-hover); }
         .auth-toggle { text-align: center; margin-top: 15px; font-size: 13px; color: var(--text-neon); cursor: pointer; }
 
-        /* --- MAIN WORKSPACE VIEW --- */
+        /* --- DISCORD-STYLE SERVER LEFT DOCK --- */
+        .server-dock {
+            width: 70px;
+            background-color: var(--bg-server-dock);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 15px;
+            gap: 10px;
+            border-right: 1px solid rgba(65, 243, 255, 0.05);
+        }
+        .server-icon {
+            width: 48px; height: 48px; background: var(--bg-panel);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 14px; cursor: pointer; color: var(--text-light);
+            transition: all 0.2s ease; border: 1px solid transparent;
+        }
+        .server-icon:hover, .server-icon.active {
+            border-radius: 16px; background: var(--accent-violet); color: #fff;
+            border-color: var(--text-neon);
+        }
+
+        /* --- SIDEBAR PANEL --- */
         .sidebar {
             width: 240px; background-color: var(--bg-panel);
             display: flex; flex-direction: column; border-right: 1px solid rgba(65, 243, 255, 0.1);
@@ -59,18 +84,53 @@
         }
         .brand span { color: var(--text-neon); text-shadow: 0 0 10px var(--text-neon); }
         
-        .channels { padding: 15px 10px; flex-grow: 1; }
-        .channel {
-            padding: 10px; border-radius: 6px; cursor: pointer; color: var(--text-light);
-            margin-bottom: 4px; transition: 0.2s; font-weight: 500;
+        .section-label {
+            font-size: 11px; text-transform: uppercase; font-weight: bold;
+            color: var(--text-muted); padding: 15px 10px 5px 15px; letter-spacing: 0.5px;
         }
-        .channel:hover, .channel.active { background: var(--accent-violet); color: #fff; }
+        .list-container { padding: 0 10px; flex-grow: 1; overflow-y: auto; }
+        .list-item {
+            padding: 10px; border-radius: 6px; cursor: pointer; color: var(--text-light);
+            margin-bottom: 4px; transition: 0.2s; font-weight: 500; display: flex; align-items: center; gap: 8px;
+        }
+        .list-item:hover, .list-item.active { background: var(--accent-violet); color: #fff; }
+        
+        .avatar-img {
+            width: 24px; height: 24px; border-radius: 50%; background: #333; object-fit: cover;
+        }
 
-        .chat-area { flex-grow: 1; display: flex; flex-direction: column; }
+        /* --- USER SETTINGS FOOTER --- */
+        .user-footer {
+            padding: 10px; background: var(--bg-server-dock);
+            display: flex; align-items: center; justify-content: space-between;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+        .user-footer-info { display: flex; align-items: center; gap: 8px; }
+        .user-footer-names { display: flex; flex-direction: column; }
+        .footer-displayname { font-weight: bold; font-size: 13px; color: #fff; }
+        .footer-username { font-size: 11px; color: var(--text-muted); }
+
+        /* --- SETTINGS MODAL INTERFACE --- */
+        #settings-overlay {
+            position: fixed; top:0; left:0; width:100%; height:100%;
+            background: rgba(11, 12, 16, 0.85);
+            display: flex; align-items: center; justify-content: center; z-index: 9998; display: none;
+        }
+
+        /* --- MAIN WORKSPACE VIEW --- */
+        .chat-area { flex-grow: 1; display: flex; flex-direction: column; background: var(--bg-obsidian); }
+        .chat-header {
+            height: 63px; padding: 0 20px; display: flex; align-items: center;
+            border-bottom: 1px solid rgba(65, 243, 255, 0.1); background: var(--bg-panel);
+            font-size: 18px; font-weight: bold; color: #fff;
+        }
         #chat-box { flex-grow: 1; padding: 25px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
         
-        .msg-node { background: rgba(31, 40, 51, 0.4); padding: 12px; border-radius: 8px; border-left: 3px solid var(--text-neon); }
-        .msg-user { color: #fff; font-weight: bold; margin-right: 8px; font-size: 14px; }
+        .msg-node { background: rgba(31, 40, 51, 0.4); padding: 12px; border-radius: 8px; border-left: 3px solid var(--text-neon); display: flex; gap: 12px; }
+        .msg-content-wrapper { flex-grow: 1; }
+        .msg-meta-header { display: flex; align-items: baseline; gap: 8px; }
+        .msg-user { color: #fff; font-weight: bold; font-size: 14px; }
+        .msg-handle { color: var(--text-muted); font-size: 11px; }
         .msg-body { margin-top: 5px; font-size: 15px; }
         .attachment-link { display: inline-block; margin-top: 5px; color: var(--text-neon); text-decoration: none; font-size: 14px; }
         .attachment-link:hover { text-decoration: underline; }
@@ -110,147 +170,290 @@
         </div>
     </div>
 
-    <!-- MAIN PLATFORM INTERFACE LAYOUT -->
+    <!-- PROFILE USER SETTINGS MODAL INTERFACE -->
+    <div id="settings-overlay">
+        <div class="auth-card">
+            <h2>User Settings</h2>
+            <label style="font-size:12px; color:var(--text-neon);">Display Name</label>
+            <input type="text" id="settings-displayname" placeholder="Nickname">
+            <label style="font-size:12px; color:var(--text-neon);">Avatar Image URL</label>
+            <input type="text" id="settings-avatar" placeholder="https://image-link.com">
+            <button onclick="saveUserProfile()" style="margin-bottom:8px;">Save Modifications</button>
+            <button onclick="toggleSettingsModal()" style="background:#444;">Cancel</button>
+        </div>
+    </div>
+
+    <!-- DISCORD-STYLE SERVER ICON NAVIGATION -->
+    <div class="server-dock">
+        <div class="server-icon active" id="home-dock-btn" onclick="switchTargetScope('home', 'home')">🏠</div>
+        <div style="width:30px; height:2px; background:rgba(255,255,255,0.1); margin:4px 0;"></div>
+        <div id="servers-icon-list" style="display:flex; flex-direction:column; gap:10px;">
+            <!-- Custom servers will render dynamically here -->
+        </div>
+        <div class="server-icon" onclick="createNewServerGuild()" style="background:var(--bg-input); color:var(--text-neon);">＋</div>
+    </div>
+
+    <!-- MAIN PLATFORM INTERFACE LAYOUT SIDEBAR -->
     <div class="sidebar">
         <div class="brand">Ryft<span>link</span></div>
-        <div class="channels">
-            <div class="channel active">🌐 system-nexus</div>
-            <div class="channel">👾 gaming-vault</div>
+        
+        <div class="section-label" id="sidebar-context-title">Channels</div>
+        <div class="list-container" id="sidebar-render-list">
+            <!-- Context list items (Channels, DMs, groups) inject here dynamically -->
         </div>
-    </div>
 
-    <div class="chat-area">
-        <div id="chat-box"></div>
+        <!-- User profile panel status bar card at footer -->
+const socket = io();
+let myAccount = { username: '', displayName: '', avatar: 'dicebear.com' };
+let isSignUp = false;
 
-        <div class="input-bar">
-            <!-- Emoji Floating Grid System -->
-            <div id="emoji-box">
-                <span class="emoji-item" onclick="insertEmoji('🔥')">🔥</span>
-                <span class="emoji-item" onclick="insertEmoji('👑')">👑</span>
-                <span class="emoji-item" onclick="insertEmoji('⚔️')">⚔️</span>
-                <span class="emoji-item" onclick="insertEmoji('🕹️')">🕹️</span>
-                <span class="emoji-item" onclick="insertEmoji('✨')">✨</span>
-                <span class="emoji-item" onclick="insertEmoji('💀')">💀</span>
-                <span class="emoji-item" onclick="insertEmoji('💯')">💯</span>
-                <span class="emoji-item" onclick="insertEmoji('🚀')">🚀</span>
-                <span class="emoji-item" onclick="insertEmoji('👾')">👾</span>
-                <span class="emoji-item" onclick="insertEmoji('👀')">👀</span>
-            </div>
+// Scope Navigation State Trackers
+let activeScope = 'home'; // 'home' or a custom server's Guild ID
+let activeTarget = 'general-nexus'; // Room ID, channel handle name, or recipient username
 
-            <div class="input-box">
-                <!-- Attachments file management hook button -->
-                <button class="icon-btn" onclick="document.getElementById('file-hook').click()">📎</button>
-                <input type="file" id="file-hook" style="display: none;" onchange="handleFileTransmission(this)">
-                
-                <input type="text" id="message" placeholder="Broadcast a transmission..." autocomplete="off">
-                
-                <button class="icon-btn" onclick="toggleEmojiBox()">😀</button>
-                <button onclick="sendTransmission()" style="background: var(--accent-violet); padding:8px 15px; border:none; border-radius:4px; color:#fff; font-weight:bold; cursor:pointer;">Send</button>
-            </div>
-        </div>
-    </div>
+// Local Storage Cache Mock Array Lists for UI tracking
+let serversList = [];
+let globalUsers = [];
 
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-        const socket = io();
-        let currentUser = null;
-        let isSignUp = false;
+function toggleAuthMode() {
+    isSignUp = !isSignUp;
+    document.getElementById('auth-title').innerText = isSignUp ? 'Create Ryftlink Profile' : 'Access Ryftlink';
+    document.getElementById('auth-user').style.display = isSignUp ? 'block' : 'none';
+    document.getElementById('auth-btn').innerText = isSignUp ? 'Register Account' : 'Log In';
+    document.getElementById('auth-switcher').innerText = isSignUp ? 'Already a member? Secure Log In' : 'New here? Spin up an account';
+}
 
-        function toggleAuthMode() {
-            isSignUp = !isSignUp;
-            document.getElementById('auth-title').innerText = isSignUp ? 'Create Ryftlink Profile' : 'Access Ryftlink';
-            document.getElementById('auth-user').style.display = isSignUp ? 'block' : 'none';
-            document.getElementById('auth-btn').innerText = isSignUp ? 'Register Account' : 'Log In';
-            document.getElementById('auth-switcher').innerText = isSignUp ? 'Already a member? Secure Log In' : 'New here? Spin up an account';
-        }
+async function handleAuthSubmit() {
+    const email = document.getElementById('auth-email').value;
+    const password = document.getElementById('auth-pass').value;
+    const username = document.getElementById('auth-user').value;
 
-        async function handleAuthSubmit() {
-            const email = document.getElementById('auth-email').value;
-            const password = document.getElementById('auth-pass').value;
-            const username = document.getElementById('auth-user').value;
+    const endpoint = isSignUp ? '/api/register' : '/api/login';
+    const payload = isSignUp ? { email, username, password } : { email, password };
 
-            const endpoint = isSignUp ? '/api/register' : '/api/login';
-            const payload = isSignUp ? { email, username, password } : { email, password };
-
-            try {
-                const response = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                const data = await response.json();
-
-                if (response.ok) {
-                    if (isSignUp) {
-                        alert(data.message);
-                        toggleAuthMode();
-                    } else {
-                        currentUser = data.username;
-                        document.getElementById('auth-overlay').style.display = "none";
-                    }
-                } else {
-                    alert(data.error || 'Authentication sequence failed.');
-                }
-            } catch (err) {
-                alert('Connection to authentication server dropped.');
-            }
-        }
-
-        // --- ATTACHMENTS HANDLING CONTROLLER ---
-        async function handleFileTransmission(input) {
-            if (!input.files.length) return;
-            const formData = new FormData();
-            formData.append('attachment', input.files[0]);
-
-            try {
-                const response = await fetch('/api/upload', { method: 'POST', body: formData });
-                const data = await response.json();
-
-                if (response.ok) {
-                    socket.emit('chat message', { user: currentUser, text: '', fileUrl: data.url, fileName: data.name });
-                } else {
-                    alert('File transmission drop sequence failed.');
-                }
-            } catch (err) {
-                alert('Error uploading file to server.');
-            }
-        }
-
-        function toggleEmojiBox() {
-            const box = document.getElementById('emoji-box');
-            box.style.display = box.style.display === 'grid' ? 'none' : 'grid';
-        }
-
-        function insertEmoji(emoji) {
-            document.getElementById('message').value += emoji;
-            toggleEmojiBox();
-            document.getElementById('message').focus();
-        }
-
-        function sendTransmission() {
-            const msgInput = document.getElementById('message');
-            const text = msgInput.value.trim();
-            if (text && currentUser) {
-                socket.emit('chat message', { user: currentUser, text: text });
-                msgInput.value = '';
-            }
-        }
-
-        socket.on('chat message', (data) => {
-            const chatBox = document.getElementById('chat-box');
-            const node = document.createElement('div');
-            node.classList.add('msg-node');
-            
-            let messageContent = `<span class="msg-user">@${data.user}</span>`;
-            if (data.text) messageContent += `<div class="msg-body">${data.text}</div>`;
-            if (data.fileUrl) messageContent += `<br><a class="attachment-link" href="${data.fileUrl}" target="_blank">📂 Open File: ${data.fileName}</a>`;
-            
-            node.innerHTML = messageContent;
-            chatBox.appendChild(node);
-            chatBox.scrollTop = chatBox.scrollHeight;
+    try {
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
         });
+        const data = await response.json();
 
-        document.getElementById('message').addEventListener('keypress', (e) => { 
-            if (e.key === 'Enter') sendTransmission(); 
+        if (response.ok) {
+            if (isSignUp) {
+                alert(data.message);
+                toggleAuthMode();
+            } else {
+                myAccount.username = data.username;
+                myAccount.displayName = data.username; // Defaults to username on boot
+                
+                document.getElementById('auth-overlay').remove(); // Destroy overlay
+                
+                // Update UI Footer
+                document.getElementById('footer-un').innerText = `@${myAccount.username}`;
+                document.getElementById('footer-dn').innerText = myAccount.displayName;
+                
+                // Authenticate socket session mapping to core orchestration pipeline
+                socket.emit('authenticate session', myAccount);
+                
+                renderSidebarElements();
+            }
+        } else {
+            alert(data.error || 'Authentication sequence failed.');
+        }
+    } catch (err) {
+        alert('Connection to authentication server dropped.');
+    }
+}
+
+// --- SCOPE & SIDEBAR STATE ENGINE COMPONENT RENDERERS ---
+function switchTargetScope(scope, target) {
+    activeScope = scope;
+    activeTarget = target;
+    
+    // Clear prior chat frames completely
+    document.getElementById('chat-box').innerHTML = '';
+    
+    // Re-render views
+    renderSidebarElements();
+    
+    // Update Headers
+    if (activeScope === 'home') {
+        document.getElementById('active-room-header').innerText = `🏠 dm-corridor :: @${activeTarget}`;
+    } else {
+        document.getElementById('active-room-header').innerText = `💬 #${activeTarget}`;
+    }
+    
+    // Sync with backend socket pipeline room boundaries
+    socket.emit('join active-room', { scope: activeScope, target: activeTarget });
+}
+
+function renderSidebarElements() {
+    const listWrapper = document.getElementById('sidebar-render-list');
+    const contextTitle = document.getElementById('sidebar-context-title');
+    listWrapper.innerHTML = '';
+
+    if (activeScope === 'home') {
+        contextTitle.innerText = "Direct Messages";
+        
+        // Add a default public server-wide chat room fallback item
+        let globalNode = document.createElement('div');
+        globalNode.className = `list-item ${activeTarget === 'general-nexus' ? 'active' : ''}`;
+        globalNode.innerHTML = `🌐 general-nexus`;
+        globalNode.onclick = () => switchTargetScope('home', 'general-nexus');
+        listWrapper.appendChild(globalNode);
+
+        // Inject other active online registered user entities
+        globalUsers.forEach(u => {
+            if (u.username === myAccount.username) return; // omit self
+            let node = document.createElement('div');
+            node.className = `list-item ${activeTarget === u.username ? 'active' : ''}`;
+            node.innerHTML = `<img src="${u.avatar || 'https://dicebear.com'}" class="avatar-img"> ${u.displayName || u.username}`;
+            node.onclick = () => switchTargetScope('home', u.username);
+            listWrapper.appendChild(node);
         });
-    </script>
+    } else {
+        // We are viewing a custom Guild Server community instance
+        const currentGuild = serversList.find(s => s.id === activeScope);
+        if (currentGuild) {
+            contextTitle.innerText = `${currentGuild.name} Channels`;
+            currentGuild.channels.forEach(ch => {
+                let node = document.createElement('div');
+                node.className = `list-item ${activeTarget === ch ? 'active' : ''}`;
+                node.innerHTML = `# ${ch}`;
+                node.onclick = () => switchTargetScope(activeScope, ch);
+                listWrapper.appendChild(node);
+            });
+        }
+    }
+}
+
+function createNewServerGuild() {
+    const serverName = prompt('Enter a name for your new Guild Server:');
+    if (!serverName) return;
+    socket.emit('create guild server', { name: serverName });
+}
+
+// --- PROFILE EDIT SETTINGS DIALOG ---
+function toggleSettingsModal() {
+    const modal = document.getElementById('settings-overlay');
+    modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
+    if (modal.style.display === 'flex') {
+        document.getElementById('settings-displayname').value = myAccount.displayName;
+        document.getElementById('settings-avatar').value = myAccount.avatar;
+    }
+}
+
+function saveUserProfile() {
+    myAccount.displayName = document.getElementById('settings-displayname').value.trim() || myAccount.username;
+    myAccount.avatar = document.getElementById('settings-avatar').value.trim() || 'dicebear.com';
+    
+    document.getElementById('footer-dn').innerText = myAccount.displayName;
+    document.getElementById('footer-avatar').src = myAccount.avatar;
+    
+    socket.emit('update profile sync', myAccount);
+    toggleSettingsModal();
+}
+
+// --- EMOTICONS AND CHAT HANDLING CONTROLLERS ---
+function toggleEmojiBox() {
+    const box = document.getElementById('emoji-box');
+    box.style.display = box.style.display === 'grid' ? 'none' : 'grid';
+}
+
+function insertEmoji(emoji) {
+    document.getElementById('message').value += emoji;
+    toggleEmojiBox();
+    document.getElementById('message').focus();
+}
+
+async function handleFileTransmission(input) {
+    if (!input.files.length) return;
+    const formData = new FormData();
+    formData.append('attachment', input.files[0]);
+
+    try {
+        const response = await fetch('/api/upload', { method: 'POST', body: formData });
+        const data = await response.json();
+
+        if (response.ok) {
+            socket.emit('chat message', {
+                scope: activeScope,
+                target: activeTarget,
+                text: '',
+                fileUrl: data.url,
+                fileName: data.name
+            });
+        } else {
+            alert('File transmission drop sequence failed.');
+        }
+    } catch (err) {
+        alert('Error uploading file to server.');
+    }
+}
+
+function sendTransmission() {
+    const msgInput = document.getElementById('message');
+    const text = msgInput.value.trim();
+    if (text) {
+        socket.emit('chat message', {
+            scope: activeScope,
+            target: activeTarget,
+            text: text,
+            fileUrl: null,
+            fileName: null
+        });
+        msgInput.value = '';
+    }
+}
+
+// --- NETWORKING BACKEND COMMUNICATIONS ENGAGEMENTS ---
+socket.on('sync directories maps', (data) => {
+    globalUsers = data.usersList || [];
+    serversList = data.guildsList || [];
+    
+    // Re-render servers list icons in left tray layout dock
+    const dockContainer = document.getElementById('servers-icon-list');
+    dockContainer.innerHTML = '';
+    
+    serversList.forEach(g => {
+        let sIcon = document.createElement('div');
+        sIcon.className = `server-icon ${activeScope === g.id ? 'active' : ''}`;
+        sIcon.innerText = g.name.substring(0, 2).toUpperCase();
+        sIcon.title = g.name;
+        sIcon.onclick = () => switchTargetScope(g.id, g.channels[0]);
+        dockContainer.appendChild(sIcon);
+    });
+
+    renderSidebarElements();
+});
+
+socket.on('chat message', (data) => {
+    const chatBox = document.getElementById('chat-box');
+    const node = document.createElement('div');
+    node.classList.add('msg-node');
+    
+    // Apply custom avatars or fallbacks instantly inside template string literal block bounds
+    const avatarSrc = data.senderAvatar || 'dicebear.com';
+
+    let messageContent = `
+        <img src="${avatarSrc}" class="avatar-img" style="width:36px; height:36px;">
+        <div class="msg-content-wrapper">
+            <div class="msg-meta-header">
+                <span class="msg-user">${data.senderDisplayName || data.user}</span>
+                <span class="msg-handle">@${data.user}</span>
+            </div>
+    `;
+    
+    if (data.text) messageContent += `<div class="msg-body">${data.text}</div>`;
+    if (data.fileUrl) messageContent += `<br><a class="attachment-link" href="${data.fileUrl}" target="_blank">📂 Open File: ${data.fileName}</a>`;
+    
+    messageContent += `</div>`;
+    node.innerHTML = messageContent;
+    chatBox.appendChild(node);
+    chatBox.scrollTop = chatBox.scrollHeight;
+});
+
+document.getElementById('message').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') sendTransmission();
+});
