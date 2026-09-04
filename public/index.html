@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ryftlink | Cyber Room</title>
+    <style>
+        :root {
+            --bg-obsidian: #0b0c10;
+            --bg-panel: #1f2833;
+            --bg-input: #121824;
+            --text-neon: #45f3ff;
+            --text-light: #c5c6c7;
+            --accent-violet: #6f2cf1;
+            --accent-hover: #5219c9;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg-obsidian);
+            color: var(--text-light);
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- AUTH AUTHENTICATION MODAL COVER --- */
+        #auth-overlay {
+            position: fixed; top:0; left:0; width:100%; height:100%;
+            background: rgba(11, 12, 16, 0.95);
+            display: flex; align-items: center; justify-content: center; z-index: 9999;
+        }
+        .auth-card {
+            background: var(--bg-panel); padding: 30px; border-radius: 12px;
+            box-shadow: 0 0 25px rgba(111, 44, 241, 0.25); width: 340px;
+            border: 1px solid rgba(69, 243, 255, 0.2);
+        }
+        .auth-card h2 { margin-top:0; color: #fff; text-shadow: 0 0 8px var(--accent-violet); }
+        .auth-card input {
+            width: 100%; padding: 10px; margin: 10px 0; box-sizing: border-box;
+            background: var(--bg-input); border: 1px solid #333; color: #fff; border-radius: 4px;
+        }
+        .auth-card button {
+            width: 100%; padding: 12px; background: var(--accent-violet);
+            color:#fff; border:none; border-radius:4px; font-weight:bold; cursor:pointer;
+        }
+        .auth-card button:hover { background: var(--accent-hover); }
+        .auth-toggle { text-align: center; margin-top: 15px; font-size: 13px; color: var(--text-neon); cursor: pointer; }
+
+        /* --- MAIN WORKSPACE VIEW --- */
+        .sidebar {
+            width: 240px; background-color: var(--bg-panel);
+            display: flex; flex-direction: column; border-right: 1px solid rgba(65, 243, 255, 0.1);
+        }
+        .brand {
+            padding: 20px; font-size: 22px; font-weight: bold; color: #fff;
+            letter-spacing: 1px; border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .brand span { color: var(--text-neon); text-shadow: 0 0 10px var(--text-neon); }
+        
+        .channels { padding: 15px 10px; flex-grow: 1; }
+        .channel {
+            padding: 10px; border-radius: 6px; cursor: pointer; color: var(--text-light);
+            margin-bottom: 4px; transition: 0.2s; font-weight: 500;
+        }
+        .channel:hover, .channel.active { background: var(--accent-violet); color: #fff; }
+
+        .chat-area { flex-grow: 1; display: flex; flex-direction: column; }
+        #chat-box { flex-grow: 1; padding: 25px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
+        
+        .msg-node { background: rgba(31, 40, 51, 0.4); padding: 12px; border-radius: 8px; border-left: 3px solid var(--text-neon); }
+        .msg-user { color: #fff; font-weight: bold; margin-right: 8px; font-size: 14px; }
+        .msg-body { margin-top: 5px; font-size: 15px; }
+        .attachment-link { display: inline-block; margin-top: 5px; color: var(--text-neon); text-decoration: none; font-size: 14px; }
+        .attachment-link:hover { text-decoration: underline; }
+
+        /* --- CONTROL PANEL INPUT AREA --- */
+        .input-bar { padding: 20px; background: var(--bg-obsidian); position: relative; }
+        .input-box {
+            display: flex; align-items: center; background: var(--bg-input);
+            padding: 8px 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); gap: 10px;
+        }
+        .input-box input { flex-grow:1; border:none; background:transparent; color:#fff; font-size:15px; outline:none; }
+        
+        .icon-btn { background: none; border: none; font-size: 20px; cursor: pointer; padding: 5px; opacity: 0.7; transition: 0.2s; }
+        .icon-btn:hover { opacity: 1; transform: scale(1.1); }
+        
+        /* Emoji Drawer Grid Box */
+        #emoji-box {
+            position: absolute; bottom: 80px; right: 20px; background: var(--bg-panel);
+            border: 1px solid var(--text-neon); border-radius: 8px; padding: 10px;
+            display: grid; grid-template-columns: repeat(5, 30px); gap: 5px; display: none; z-index: 100;
+        }
+        .emoji-item { font-size: 20px; cursor: pointer; text-align: center; }
+        .emoji-item:hover { transform: scale(1.2); }
+    </style>
+</head>
+<body>
+
+    <!-- AUTH SECTION CONTAINER MAP -->
+    <div id="auth-overlay">
+        <div class="auth-card" id="login-form">
+            <h2 id="auth-title">Access Ryftlink</h2>
+            <input type="email" id="auth-email" placeholder="Email Address">
+            <input type="text" id="auth-user" placeholder="Username (Signup Only)" style="display:none;">
+            <input type="password" id="auth-pass" placeholder="Password">
+            <button onclick="handleAuthSubmit()" id="auth-btn">Log In</button>
+            <div class="auth-toggle" onclick="toggleAuthMode()" id="auth-switcher">New here? Spin up an account</div>
+        </div>
+    </div>
+
+    <!-- MAIN PLATFORM INTERFACE LAYOUT -->
+    <div class="sidebar">
+        <div class="brand">Ryft<span>link</span></div>
+        <div class="channels">
+            <div class="channel active">🌐 system-nexus</div>
+            <div class="channel">👾 gaming-vault</div>
+        </div>
+    </div>
+
+    <div class="chat-area">
+        <div id="chat-box"></div>
+
+        <div class="input-bar">
+            <!-- Emoji Floating Grid System -->
+            <div id="emoji-box">
+                <span class="emoji-item" onclick="insertEmoji('🔥')">🔥</span>
+                <span class="emoji-item" onclick="insertEmoji('👑')">👑</span>
+                <span class="emoji-item" onclick="insertEmoji('⚔️')">⚔️</span>
+                <span class="emoji-item" onclick="insertEmoji('🕹️')">🕹️</span>
+                <span class="emoji-item" onclick="insertEmoji('✨')">✨</span>
+                <span class="emoji-item" onclick="insertEmoji('💀')">💀</span>
+                <span class="emoji-item" onclick="insertEmoji('💯')">💯</span>
+                <span class="emoji-item" onclick="insertEmoji('🚀')">🚀</span>
+                <span class="emoji-item" onclick="insertEmoji('👾')">👾</span>
+                <span class="emoji-item" onclick="insertEmoji('👀')">👀</span>
+            </div>
+
+            <div class="input-box">
+                <!-- Attachments file management hook button -->
+                <button class="icon-btn" onclick="document.getElementById('file-hook').click()">📎</button>
+                <input type="file" id="file-hook" style="display: none;" onchange="handleFileTransmission(this)">
+                
+                <input type="text" id="message" placeholder="Broadcast a transmission..." autocomplete="off">
+                
+                <button class="icon-btn" onclick="toggleEmojiBox()">😀</button>
+                <button onclick="sendTransmission()" style="background: var(--accent-violet); padding:8px 15px; border:none; border-radius:4px; color:#fff; font-weight:bold; cursor:pointer;">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        let currentUser = null;
+        let isSignUp = false;
+
+        function toggleAuthMode() {
+            isSignUp = !isSignUp;
+            document.getElementById('auth-title').innerText = isSignUp ? 'Create Ryftlink Profile' : 'Access Ryftlink';
+            document.getElementById('auth-user').style.display = isSignUp ? 'block' : 'none';
+            document.getElementById('auth-btn').innerText = isSignUp ? 'Register Account' : 'Log In';
+            document.getElementById('auth-switcher').innerText = isSignUp ? 'Already a member? Secure Log In' : 'New here? Spin up an account';
+        }
+
+        async function handleAuthSubmit() {
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-pass').value;
+            const username = document.getElementById('auth-user').value;
+
+            const endpoint = isSignUp ? '/api/register' : '/api/login';
+            const payload = isSignUp ? { email, username, password } : { email, password };
+
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    if (isSignUp) {
+                        alert(data.message);
+                        toggleAuthMode();
+                    } else {
+                        currentUser = data.username;
+                        document.getElementById('auth-overlay').style.display = "none";
+                    }
+                } else {
+                    alert(data.error || 'Authentication sequence failed.');
+                }
+            } catch (err) {
+                alert('Connection to authentication server dropped.');
+            }
+        }
+
+        // --- ATTACHMENTS HANDLING CONTROLLER ---
+        async function handleFileTransmission(input) {
+            if (!input.files.length) return;
+            const formData = new FormData();
+            formData.append('attachment', input.files[0]);
+
+            try {
+                const response = await fetch('/api/upload', { method: 'POST', body: formData });
+                const data = await response.json();
+
+                if (response.ok) {
+                    socket.emit('chat message', { user: currentUser, text: '', fileUrl: data.url, fileName: data.name });
+                } else {
+                    alert('File transmission drop sequence failed.');
+                }
+            } catch (err) {
+                alert('Error uploading file to server.');
+            }
+        }
+
+        function toggleEmojiBox() {
+            const box = document.getElementById('emoji-box');
+            box.style.display = box.style.display === 'grid' ? 'none' : 'grid';
+        }
+
+        function insertEmoji(emoji) {
+            document.getElementById('message').value += emoji;
+            toggleEmojiBox();
+            document.getElementById('message').focus();
+        }
+
+        function sendTransmission() {
+            const msgInput = document.getElementById('message');
+            const text = msgInput.value.trim();
+            if (text && currentUser) {
+                socket.emit('chat message', { user: currentUser, text: text });
+                msgInput.value = '';
+            }
+        }
+
+        socket.on('chat message', (data) => {
+            const chatBox = document.getElementById('chat-box');
+            const node = document.createElement('div');
+            node.classList.add('msg-node');
+            
+            let messageContent = `<span class="msg-user">@${data.user}</span>`;
+            if (data.text) messageContent += `<div class="msg-body">${data.text}</div>`;
+            if (data.fileUrl) messageContent += `<br><a class="attachment-link" href="${data.fileUrl}" target="_blank">📂 Open File: ${data.fileName}</a>`;
+            
+            node.innerHTML = messageContent;
+            chatBox.appendChild(node);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        });
+
+        document.getElementById('message').addEventListener('keypress', (e) => { 
+            if (e.key === 'Enter') sendTransmission(); 
+        });
+    </script>
